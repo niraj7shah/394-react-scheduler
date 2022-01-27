@@ -1,24 +1,37 @@
 import React, { useState }from 'react';
 import { terms, hasConflict, getCourseTerm} from '../utilities/times.js';
+import { signInWithGoogle, signOut, useUserState} from '../utilities/firebase.js';
 import Course from './Course.js';
 
-// const getCourseNumber = course => (
-//     course.id.slice(1, 4)
-// );
-  
-// const toggle = (x, lst) => (
-//     lst.includes(x) ? lst.filter(y => y !== x) : [x, ...lst]
-// );
+const SignInButton = () => (
+  <button className="btn btn-secondary btn-sm"
+      onClick={() => signInWithGoogle()}>
+    Sign In
+  </button>
+);
 
-const TermSelector = ({term, setTerm}) => (
-    <div className="btn-group">
-    { 
-      Object.values(terms).map(value => (
-        <TermButton key={value} term={value} setTerm={setTerm} checked={value === term} />
-      ))
-    }
+const SignOutButton = () => (
+  <button className="btn btn-secondary btn-sm"
+      onClick={() => signOut()}>
+    Sign Out
+  </button>
+);
+
+const TermSelector = ({term, setTerm}) => {
+  const [user] = useUserState();
+  return (
+    <div className="btn-toolbar justify-content-between">
+      <div className="btn-group">
+      { 
+        Object.values(terms).map(
+          value => <TermButton key={value} term={value} setTerm={setTerm} checked={value === term} />
+        )
+      }
+      </div>
+      { user ? <SignOutButton /> : <SignInButton /> }
     </div>
   );
+};
 
   const TermButton = ({term, setTerm, checked}) => (
     <>
@@ -44,22 +57,3 @@ export const CourseList = ({ courses }) => {
       </>
     );
   };
-
-//   const Course = ({ course, selected, setSelected }) => {
-//     const isSelected = selected.includes(course);
-//     const isDisabled = !isSelected && hasConflict(course, selected);
-//     const style = {
-//       backgroundColor: isDisabled? 'lightgrey' : isSelected ? 'lightgreen' : 'white'
-//     };
-//     return (
-//       <div className="card m-1 p-2" 
-//         style={style}
-//         onClick={() => setSelected(toggle(course, selected))}>
-//         <div className="card-body">
-//           <div className="card-title">{ getCourseTerm(course) } CS { getCourseNumber(course) }</div>
-//           <div className="card-text">{ course.title }</div>
-//           <div className="card-text">{ course.meets }</div>
-//         </div>
-//       </div>
-//     );
-//   };
